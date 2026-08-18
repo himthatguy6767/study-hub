@@ -92,15 +92,179 @@
     <div class="games-hub" id="gamesView">
         <h2>🎮 Unblocked Vault</h2>
         <div class="game-grid">
-            <!-- Open-source embed-safe link -->
-            <div class="game-card" onclick="launchGame('https://gabrielecirulli.github.io/2048/')">
-                <h3>2048 (Classic)</h3>
+            <!-- Loads a self-contained mini HTML5 game directly via data URL -->
+            <div class="game-card" onclick="launchGame('data:text/html;charset=utf-8,' + encodeURIComponent(`<!DOCTYPE html><html><head><style>body{background:#111;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;}h1{color:#00ffcc;margin-bottom:10px;}.box{width:300px;height:300px;background:#222;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px;border-radius:10px;}.cell{background:#333;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;border-radius:5px;}p{color:#888;margin-top:15px;}</style></head><body><h1>2048 Mini</h1><div class=\"box\" id=\"grid\"></div><p>Use Arrow Keys to play!</p><script>let board=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];function render(){let g=document.getElementById('grid');g.innerHTML='';board.forEach(v=>{let c=document.createElement('div');c.className='cell';c.style.background=v>0?'#00ffcc':'#333';c.style.color=v>0?'#000':'#fff';c.innerText=v>0?v:'';g.appendChild(c);});}function spawn(){let empty=board.map((v,i)=>v===0?i:null).filter(v=>v!==null);if(empty.length){board[empty[Math.floor(Math.random()*empty.length)]]=Math.random()>0.5?2:4;}}spawn();spawn();render();window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){spawn();render();}});<\/script></body></html>'))">
+                <h3>2048 (Mini Edition)</h3>
                 <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">Click to Play</p>
             </div>
-            <div class="game-card" onclick="launchGame('https://tetris.com/ jugar')">
-                <h3>Retro Arcade</h3>
+            <div class="game-card"><h3>Retro Arcade</h3></div>
+        </div>
+    </div>
+
+    <!-- In-Page Game Player -->
+    <div class="game-player" id="playerView">
+        <button class="back-btn" onclick="closeGame()">⬅ Back to Vault</button>
+        <iframe id="gameFrame" src="" frameborder="0" scrolling="no" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms"></iframe>
+    </div>
+
+    <!-- Secret Controller Button -->
+    <button class="controller-btn" onclick="openModal()">🎮</button>
+
+    <!-- Code Prompt Modal -->
+    <div class="modal-overlay" id="codeModal">
+        <div class="modal">
+            <h3>Enter Access Code</h3>
+            <input type="password" id="codeInput" placeholder="• • •" maxlength="4">
+            <button onclick="checkCode()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        const bg = document.getElementById('emojiBg');
+        for (let i = 0; i < 300; i++) {
+            const span = document.createElement('span');
+            span.textContent = '🥜';
+            bg.appendChild(span);
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchInput').value;
+            if (query) { window.location.href = "https://www.google.com/search?q=" + encodeURIComponent(query); }
+        }
+
+        function openModal() {
+            document.getElementById('codeModal').style.display = 'flex';
+            document.getElementById('codeInput').focus();
+        }
+
+        function checkCode() {
+            if (document.getElementById('codeInput').value === '888') {
+                document.getElementById('codeModal').style.display = 'none';
+                document.getElementById('landingView').style.display = 'none';
+                document.getElementById('gamesView').style.display = 'block';
+            } else {
+                alert('Incorrect Code');
+                document.getElementById('codeInput').value = '';
+            }
+        }
+
+        document.getElementById('codeInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') { checkCode(); }
+        });
+
+        function launchGame(url) {
+            document.getElementById('gamesView').style.display = 'none';
+            document.getElementById('playerView').style.display = 'flex';
+            document.getElementById('gameFrame').src = url;
+        }
+
+        function closeGame() {
+            document.getElementById('gameFrame').src = ''; 
+            document.getElementById('playerView').style.display = 'none';
+            document.getElementById('gamesView').style.display = 'block';
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Totally Normal Study Site</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #121212; color: #ffffff; height: 100vh; overflow: hidden; position: relative; }
+
+        .emoji-background {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            opacity: 0.15; z-index: 1; pointer-events: none; user-select: none; font-size: 2rem; text-align: center; align-content: center;
+        }
+
+        .landing-container {
+            position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 20px;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 10px; color: #e0e0e0; }
+        p { color: #888; font-size: 1.1rem; }
+
+        .search-box { margin-top: 20px; }
+        .search-box input { padding: 12px; width: 300px; border-radius: 20px; border: 1px solid #444; background: #1a1a1a; color: white; text-align: center; outline: none; }
+        .search-box button { padding: 10px 20px; border-radius: 20px; border: none; background: #00ffcc; cursor: pointer; font-weight: bold; margin-left: 5px; }
+        .search-box button:hover { background: #00b38f; }
+
+        .controller-btn {
+            position: fixed; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); color: #555; font-size: 1.5rem; padding: 12px;
+            border-radius: 50%; cursor: pointer; z-index: 10; transition: all 0.3s ease;
+        }
+        .controller-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.15); transform: scale(1.1); }
+
+        /* Hidden Games Hub */
+        .games-hub {
+            display: none; position: relative; z-index: 2; height: 100vh; padding: 40px; overflow-y: auto;
+        }
+        .games-hub h2 { font-size: 2rem; margin-bottom: 20px; color: #00ffcc; }
+        
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        
+        .game-card {
+            background: #1e1e1e; border: 1px solid #333; padding: 20px; border-radius: 10px;
+            text-align: center; cursor: pointer; transition: 0.2s; height: 140px; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+        }
+        .game-card:hover { border-color: #00ffcc; transform: translateY(-3px); }
+        .game-card h3 { color: #fff; font-size: 1.2rem; }
+
+        /* In-Page Game Player View */
+        .game-player {
+            display: none; position: relative; z-index: 5; height: 100vh; width: 100vw;
+            background: #121212; flex-direction: column; padding: 20px;
+        }
+        .back-btn {
+            background: #333; color: #fff; border: none; padding: 8px 16px; border-radius: 6px;
+            cursor: pointer; font-weight: bold; align-self: flex-start; margin-bottom: 15px;
+        }
+        .back-btn:hover { background: #444; }
+        .game-player iframe {
+            width: 100%; flex-grow: 1; border: 1px solid #333; border-radius: 10px; background: #000;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); z-index: 100; justify-content: center; align-items: center;
+        }
+        .modal { background: #1a1a1a; border: 1px solid #333; padding: 30px; border-radius: 12px; text-align: center; width: 300px; }
+        .modal input { width: 100%; padding: 10px; margin: 15px 0; background: #111; border: 1px solid #444; color: #fff; border-radius: 6px; text-align: center; font-size: 1.2rem; letter-spacing: 2px; outline: none; }
+        .modal button { background: #00ffcc; color: #000; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; }
+        .modal button:hover { background: #00b38f; }
+    </style>
+</head>
+<body>
+
+    <div class="emoji-background" id="emojiBg"></div>
+
+    <!-- Landing Page -->
+    <div class="landing-container" id="landingView">
+        <h1>StudyNotes Hub</h1>
+        <p>Your ultimate resource for academic document tracking.</p>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search study topics...">
+            <button onclick="performSearch()">Search</button>
+        </div>
+    </div>
+
+    <!-- Hidden Games Hub -->
+    <div class="games-hub" id="gamesView">
+        <h2>🎮 Unblocked Vault</h2>
+        <div class="game-grid">
+            <!-- Loads a self-contained mini HTML5 game directly via data URL -->
+            <div class="game-card" onclick="launchGame('data:text/html;charset=utf-8,' + encodeURIComponent(`<!DOCTYPE html><html><head><style>body{background:#111;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;}h1{color:#00ffcc;margin-bottom:10px;}.box{width:300px;height:300px;background:#222;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px;border-radius:10px;}.cell{background:#333;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;border-radius:5px;}p{color:#888;margin-top:15px;}</style></head><body><h1>2048 Mini</h1><div class=\"box\" id=\"grid\"></div><p>Use Arrow Keys to play!</p><script>let board=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];function render(){let g=document.getElementById('grid');g.innerHTML='';board.forEach(v=>{let c=document.createElement('div');c.className='cell';c.style.background=v>0?'#00ffcc':'#333';c.style.color=v>0?'#000':'#fff';c.innerText=v>0?v:'';g.appendChild(c);});}function spawn(){let empty=board.map((v,i)=>v===0?i:null).filter(v=>v!==null);if(empty.length){board[empty[Math.floor(Math.random()*empty.length)]]=Math.random()>0.5?2:4;}}spawn();spawn();render();window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){spawn();render();}});<\/script></body></html>'))">
+                <h3>2048 (Mini Edition)</h3>
                 <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">Click to Play</p>
             </div>
+            <div class="game-card"><h3>Retro Arcade</h3></div>
         </div>
     </div>
 
