@@ -26,7 +26,6 @@
         .search-box button { padding: 10px 20px; border-radius: 20px; border: none; background: #00ffcc; cursor: pointer; font-weight: bold; margin-left: 5px; }
         .search-box button:hover { background: #00b38f; }
 
-        /* Big, obvious centered vault button */
         .vault-btn {
             margin-top: 25px; padding: 12px 30px; border-radius: 25px; border: 2px solid #00ffcc;
             background: transparent; color: #00ffcc; font-size: 1.1rem; font-weight: bold;
@@ -34,7 +33,6 @@
         }
         .vault-btn:hover { background: #00ffcc; color: #000; transform: scale(1.05); }
 
-        /* Hidden Games Hub */
         .games-hub {
             display: none; position: relative; z-index: 2; height: 100vh; padding: 40px; overflow-y: auto;
         }
@@ -50,7 +48,6 @@
         .game-card:hover { border-color: #00ffcc; transform: translateY(-3px); }
         .game-card h3 { color: #fff; font-size: 1.2rem; }
 
-        /* In-Page Game Player */
         .game-player {
             display: none; position: relative; z-index: 5; height: 100vh; width: 100vw;
             background: #121212; flex-direction: column; padding: 20px;
@@ -64,7 +61,6 @@
             width: 100%; flex-grow: 1; border: 1px solid #333; border-radius: 10px; background: #000;
         }
 
-        /* Modal */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.8); z-index: 100; justify-content: center; align-items: center;
@@ -79,7 +75,6 @@
 
     <div class="emoji-background" id="emojiBg"></div>
 
-    <!-- Landing Page -->
     <div class="landing-container" id="landingView">
         <h1>StudyNotes Hub</h1>
         <p>Your ultimate resource for academic document tracking.</p>
@@ -87,15 +82,13 @@
             <input type="text" id="searchInput" placeholder="Search study topics...">
             <button onclick="performSearch()">Search</button>
         </div>
-        <!-- Clearly visible center button to open the vault -->
-        <button class="vault-btn" onclick="openModal()">🎮 Open Games Vault</button>
+        <button class="vault-btn" id="vaultBtn">🎮 Open Games Vault</button>
     </div>
 
-    <!-- Hidden Games Hub -->
     <div class="games-hub" id="gamesView">
         <h2>🎮 Unblocked Vault</h2>
         <div class="game-grid">
-            <div class="game-card" onclick="launchGame('data:text/html;charset=utf-8,' + encodeURIComponent(`<!DOCTYPE html><html><head><style>body{background:#111;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;}h1{color:#00ffcc;margin-bottom:10px;}.box{width:300px;height:300px;background:#222;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px;border-radius:10px;}.cell{background:#333;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;border-radius:5px;}p{color:#888;margin-top:15px;}</style></head><body><h1>2048 Mini</h1><div class=\"box\" id=\"grid\"></div><p>Use Arrow Keys to play!</p><script>let board=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];function render(){let g=document.getElementById('grid');g.innerHTML='';board.forEach(v=>{let c=document.createElement('div');c.className='cell';c.style.background=v>0?'#00ffcc':'#333';c.style.color=v>0?'#000':'#fff';c.innerText=v>0?v:'';g.appendChild(c);});}function spawn(){let empty=board.map((v,i)=>v===0?i:null).filter(v=>v!==null);if(empty.length){board[empty[Math.floor(Math.random()*empty.length)]]=Math.random()>0.5?2:4;}}spawn();spawn();render();window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){spawn();render();}});<\/script></body></html>'))">
+            <div class="game-card" id="game2048">
                 <h3>2048 (Mini Edition)</h3>
                 <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">Click to Play</p>
             </div>
@@ -103,18 +96,16 @@
         </div>
     </div>
 
-    <!-- In-Page Game Player -->
     <div class="game-player" id="playerView">
-        <button class="back-btn" onclick="closeGame()">⬅ Back to Vault</button>
+        <button class="back-btn" id="backBtn">⬅ Back to Vault</button>
         <iframe id="gameFrame" src="" frameborder="0" scrolling="no" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms"></iframe>
     </div>
 
-    <!-- Code Prompt Modal -->
     <div class="modal-overlay" id="codeModal">
         <div class="modal">
             <h3>Enter Access Code</h3>
             <input type="password" id="codeInput" placeholder="• • •" maxlength="3">
-            <button onclick="checkCode()">Submit</button>
+            <button id="submitCode">Submit</button>
         </div>
     </div>
 
@@ -147,6 +138,10 @@
             }
         }
 
+        // Direct Event Listeners
+        document.getElementById('vaultBtn').addEventListener('click', openModal);
+        document.getElementById('submitCode').addEventListener('click', checkCode);
+        
         document.getElementById('codeInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') { checkCode(); }
         });
@@ -162,17 +157,19 @@
             if (keystrokes.length > 5) keystrokes = keystrokes.slice(-5);
         });
 
-        function launchGame(url) {
+        document.getElementById('game2048').addEventListener('click', () => {
+            const gameHtml = `<!DOCTYPE html><html><head><style>body{background:#111;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;}h1{color:#00ffcc;margin-bottom:10px;}.box{width:300px;height:300px;background:#222;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px;border-radius:10px;}.cell{background:#333;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;border-radius:5px;}p{color:#888;margin-top:15px;}</style></head><body><h1>2048 Mini</h1><div class="box" id="grid"></div><p>Use Arrow Keys to play!</p><script>let board=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];function render(){let g=document.getElementById('grid');g.innerHTML='';board.forEach(v=>{let c=document.createElement('div');c.className='cell';c.style.background=v>0?'#00ffcc':'#333';c.style.color=v>0?'#000':'#fff';c.innerText=v>0?v:'';g.appendChild(c);});}function spawn(){let empty=board.map((v,i)=>v===0?i:null).filter(v=>v!==null);if(empty.length){board[empty[Math.floor(Math.random()*empty.length)]]=Math.random()>0.5?2:4;}}spawn();spawn();render();window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){spawn();render();}});<\/script></body></html>`;
+            
             document.getElementById('gamesView').style.display = 'none';
             document.getElementById('playerView').style.display = 'flex';
-            document.getElementById('gameFrame').src = url;
-        }
+            document.getElementById('gameFrame').src = 'data:text/html;charset=utf-8,' + encodeURIComponent(gameHtml);
+        });
 
-        function closeGame() {
+        document.getElementById('backBtn').addEventListener('click', () => {
             document.getElementById('gameFrame').src = ''; 
             document.getElementById('playerView').style.display = 'none';
             document.getElementById('gamesView').style.display = 'block';
-        }
+        });
     </script>
 </body>
 </html>
