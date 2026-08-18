@@ -21,19 +21,18 @@
         h1 { font-size: 2.5rem; margin-bottom: 10px; color: #e0e0e0; }
         p { color: #888; font-size: 1.1rem; }
 
-        .search-box { margin-top: 20px; }
-        .search-box input { padding: 12px; width: 300px; border-radius: 20px; border: 1px solid #444; background: #1a1a1a; color: white; text-align: center; outline: none; }
-        .search-box button { padding: 10px 20px; border-radius: 20px; border: none; background: #00ffcc; cursor: pointer; font-weight: bold; margin-left: 5px; }
+        .search-box { margin-top: 20px; display: flex; justify-content: center; align-items: center; }
+        .search-box input { padding: 12px; width: 260px; border-radius: 20px 0 0 20px; border: 1px solid #444; background: #1a1a1a; color: white; text-align: center; outline: none; }
+        .search-box button { padding: 12px 20px; border-radius: 0 20px 20px 0; border: none; background: #00ffcc; cursor: pointer; font-weight: bold; }
         .search-box button:hover { background: #00b38f; }
 
-        /* Highly Visible Controller Button */
+        /* Controller Button placed right next to search for easy access */
         .controller-btn {
-            position: fixed; bottom: 30px; right: 30px; background: #1e1e1e;
-            border: 2px solid #00ffcc; color: #00ffcc; font-size: 1.8rem; padding: 15px;
-            border-radius: 50%; cursor: pointer; z-index: 9999; transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 255, 204, 0.3);
+            padding: 12px 18px; border-radius: 20px; border: 1px solid #00ffcc; background: #1a1a1a;
+            color: #00ffcc; font-size: 1.1rem; cursor: pointer; font-weight: bold; margin-left: 10px;
+            transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 5px;
         }
-        .controller-btn:hover { background: #00ffcc; color: #000; transform: scale(1.15); }
+        .controller-btn:hover { background: #00ffcc; color: #000; transform: scale(1.05); }
 
         /* Hidden Games Hub */
         .games-hub {
@@ -87,6 +86,8 @@
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Search study topics...">
             <button onclick="performSearch()">Search</button>
+            <!-- Controller button right next to the search bar -->
+            <button class="controller-btn" onclick="openModal()">🎮 Vault</button>
         </div>
     </div>
 
@@ -107,9 +108,6 @@
         <button class="back-btn" onclick="closeGame()">⬅ Back to Vault</button>
         <iframe id="gameFrame" src="" frameborder="0" scrolling="no" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms"></iframe>
     </div>
-
-    <!-- Big Glowing Secret Controller Button -->
-    <button class="controller-btn" onclick="openModal()">🎮</button>
 
     <!-- Code Prompt Modal -->
     <div class="modal-overlay" id="codeModal">
@@ -153,7 +151,6 @@
             if (e.key === 'Enter') { checkCode(); }
         });
 
-        // Secret shortcut: just press '8', '8', '8' anywhere on your keyboard to open the modal!
         let keystrokes = "";
         window.addEventListener('keydown', (e) => {
             if (document.activeElement.tagName === 'INPUT') return;
